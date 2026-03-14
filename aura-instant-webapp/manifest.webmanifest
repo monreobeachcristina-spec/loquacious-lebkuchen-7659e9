@@ -1,0 +1,17 @@
+{
+  "name": "Aura Instant Studio",
+  "short_name": "Aura Studio",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F8F5EF",
+  "theme_color": "#151515",
+  "description": "Instant browser-first image, remix, and motion studio.",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='32' fill='%23151515'/%3E%3Ctext x='64' y='83' text-anchor='middle' font-family='Georgia, serif' font-size='72' font-style='italic' fill='%23C5A059'%3EA%3C/text%3E%3C/svg%3E",
+      "sizes": "128x128",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

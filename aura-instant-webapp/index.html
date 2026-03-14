@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aura Instant Studio</title>
+  <meta name="description" content="Browser-first image, remix, and motion studio with instant access." />
+  <meta name="theme-color" content="#151515" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'neutral-bg': '#F8F5EF',
+            'studio-dark': '#151515',
+            'accent-gold': '#C5A059',
+            'accent-terra': '#BC5D41',
+            'studio-card': '#FCFBF8'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          },
+          boxShadow: {
+            soft: '0 10px 40px rgba(0,0,0,.08)'
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-neutral-bg text-studio-dark min-h-screen selection:bg-accent-gold/30">
+  <div class="film-grain"></div>
+  <div id="toast-container" class="toast-container"></div>
+
+  <nav class="sticky top-0 z-40 bg-white/75 backdrop-blur border-b border-black/5">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-studio-dark text-accent-gold flex items-center justify-center font-serif text-lg italic shadow-soft">A</div>
+        <div>
+          <div class="font-serif text-xl leading-none">Aura Instant Studio</div>
+          <div class="text-[11px] uppercase tracking-[0.25em] text-accent-gold">Browser-first image + motion lab</div>
+        </div>
+      </div>
+      <div class="hidden md:flex items-center gap-3 text-sm">
+        <button class="tab-chip active" data-tab-trigger="txt2img">Text → Image</button>
+        <button class="tab-chip" data-tab-trigger="img2img">Image → Image</button>
+        <button class="tab-chip" data-tab-trigger="img2video">Image → Video</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="max-w-5xl mx-auto px-6 pt-12 pb-8 text-center">
+    <p class="text-[11px] uppercase tracking-[0.35em] text-accent-gold mb-3">Instant web edition</p>
+    <h1 class="font-serif text-5xl md:text-6xl leading-tight">Open it, generate a look, remix a still, then turn it into motion.</h1>
+    <p class="max-w-3xl mx-auto mt-5 text-lg text-black/65 leading-relaxed">
+      This edition opens directly in a browser and can be deployed as a static site. Text-to-image works with a browser-friendly image endpoint, quick remix and Motion Clip run on-device, and AI remix unlocks when you add your own optional upload key.
+    </p>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 pb-20 grid grid-cols-1 xl:grid-cols-12 gap-8">
+    <section class="xl:col-span-5 space-y-6">
+      <div class="glass-card rounded-[2rem] p-6 shadow-soft border border-black/5">
+        <div class="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <p class="text-[11px] uppercase tracking-[0.3em] text-black/45 mb-2">Instant access</p>
+            <h2 class="font-serif text-2xl">Static web app controls</h2>
+          </div>
+          <div class="flex gap-2">
+            <button id="install-app" class="studio-button studio-button-light hidden" data-no-busy="true">Install</button>
+            <button id="save-settings" class="studio-button studio-button-light" data-no-busy="true">Save</button>
+          </div>
+        </div>
+
+        <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="status-card">
+            <div class="status-label">Text → image</div>
+            <div id="image-pill" class="status-pill status-ok">Ready</div>
+            <p class="status-text">Anonymous browser mode is enabled. Expect rate limits if you generate rapidly.</p>
+          </div>
+          <div class="status-card">
+            <div class="status-label">AI remix</div>
+            <div id="remix-pill" class="status-pill status-pending">Optional key</div>
+            <p id="remix-text" class="status-text">Quick Remix works instantly. AI Remix needs a Pollinations upload key so your reference image can be posted first.</p>
+          </div>
+        </div>
+
+        <div class="mt-5 grid grid-cols-1 gap-4">
+          <div>
+            <label class="field-label">Optional Pollinations key for AI Remix uploads</label>
+            <input id="api-key" class="field-input" type="password" placeholder="Stored only in this browser" autocomplete="off" />
+            <p class="mt-2 text-sm text-black/60 leading-6">You only need this for the AI Remix mode. The browser keeps it locally in localStorage.</p>
+          </div>
+          <div class="rounded-2xl bg-studio-dark text-white p-4 text-sm leading-6">
+            <strong class="text-accent-gold">What works instantly:</strong>
+            text-to-image, Quick Remix, and Motion Clip. AI Remix is available after you add your own upload key.
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-[2rem] p-6 shadow-soft border border-black/5">
+        <div class="flex items-center justify-between gap-4 mb-5">
+          <div>
+            <p class="text-[11px] uppercase tracking-[0.3em] text-black/45 mb-2">Studio modes</p>
+            <h2 class="font-serif text-2xl">Generator</h2>
+          </div>
+          <div class="md:hidden flex items-center gap-2">
+            <button class="tab-chip active" data-tab-trigger="txt2img">T→I</button>
+            <button class="tab-chip" data-tab-trigger="img2img">I→I</button>
+            <button class="tab-chip" data-tab-trigger="img2video">I→V</button>
+          </div>
+        </div>
+
+        <div class="tab-panels">
+          <section class="tab-panel active" data-tab="txt2img">
+            <form id="txt2img-form" class="space-y-4">
+              <div>
+                <label class="field-label">Prompt</label>
+                <textarea name="prompt" class="field-textarea" placeholder="A cinematic portrait in rain-soaked neon, realistic skin detail, subtle lens bloom" required></textarea>
+              </div>
+              <div>
+                <label class="field-label">Avoid terms</label>
+                <textarea name="avoidTerms" class="field-textarea h-24" placeholder="text, watermark, low detail, extra fingers"></textarea>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="field-label">Model</label>
+                  <select name="model" class="field-input">
+                    <option value="flux">flux</option>
+                    <option value="turbo">turbo</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label">Seed</label>
+                  <input name="seed" type="number" class="field-input" placeholder="Random" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <label class="field-label">Width</label>
+                  <input name="width" type="number" class="field-input" value="1024" min="256" max="2048" step="64" />
+                </div>
+                <div>
+                  <label class="field-label">Height</label>
+                  <input name="height" type="number" class="field-input" value="1024" min="256" max="2048" step="64" />
+                </div>
+                <div>
+                  <label class="field-label">Enhance</label>
+                  <select name="enhance" class="field-input">
+                    <option value="false">Off</option>
+                    <option value="true">On</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label">Privacy</label>
+                  <select name="privateMode" class="field-input">
+                    <option value="true">Private hint on</option>
+                    <option value="false">Default</option>
+                  </select>
+                </div>
+              </div>
+              <button class="studio-button studio-button-dark w-full" type="submit">Generate image</button>
+            </form>
+          </section>
+
+          <section class="tab-panel" data-tab="img2img">
+            <form id="img2img-form" class="space-y-4">
+              <div>
+                <label class="field-label">Source image</label>
+                <label class="upload-dropzone">
+                  <input name="image" type="file" accept="image/*" class="hidden" required />
+                  <span>Drop an image here or click to upload</span>
+                  <small class="upload-file-name">No file selected</small>
+                </label>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label class="mode-card mode-selected">
+                  <input type="radio" name="remixMode" value="quick" checked />
+                  <span class="mode-title">Quick Remix</span>
+                  <span class="mode-copy">Runs in your browser instantly with cinematic color grading, glow, grain, and vignette based on your prompt.</span>
+                </label>
+                <label class="mode-card">
+                  <input type="radio" name="remixMode" value="ai" />
+                  <span class="mode-title">AI Remix</span>
+                  <span class="mode-copy">Uploads your reference image, then asks Pollinations kontext to transform it from your prompt.</span>
+                </label>
+              </div>
+
+              <div>
+                <label class="field-label">Prompt</label>
+                <textarea name="prompt" class="field-textarea" placeholder="Turn this into an editorial still, dramatic side light, shallow depth of field" required></textarea>
+              </div>
+
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <label class="field-label">Strength</label>
+                  <input name="strength" type="number" step="0.05" class="field-input" value="0.65" min="0.05" max="1" />
+                </div>
+                <div>
+                  <label class="field-label">Output width</label>
+                  <input name="width" type="number" class="field-input" value="1024" min="256" max="2048" step="64" />
+                </div>
+                <div>
+                  <label class="field-label">Output height</label>
+                  <input name="height" type="number" class="field-input" value="1024" min="256" max="2048" step="64" />
+                </div>
+                <div>
+                  <label class="field-label">Seed</label>
+                  <input name="seed" type="number" class="field-input" placeholder="Random" />
+                </div>
+              </div>
+
+              <button class="studio-button studio-button-dark w-full" type="submit">Remix image</button>
+            </form>
+          </section>
+
+          <section class="tab-panel" data-tab="img2video">
+            <form id="img2video-form" class="space-y-4">
+              <div>
+                <label class="field-label">Source image</label>
+                <label class="upload-dropzone">
+                  <input name="image" type="file" accept="image/*" class="hidden" required />
+                  <span>Upload a still frame to animate</span>
+                  <small class="upload-file-name">No file selected</small>
+                </label>
+              </div>
+
+              <div>
+                <label class="field-label">Clip description</label>
+                <textarea name="prompt" class="field-textarea h-24" placeholder="Slow cinematic push-in with a quiet, dreamy mood"></textarea>
+              </div>
+
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <label class="field-label">Duration (s)</label>
+                  <input name="duration" type="number" class="field-input" value="5" min="1" max="20" />
+                </div>
+                <div>
+                  <label class="field-label">FPS</label>
+                  <input name="fps" type="number" class="field-input" value="30" min="12" max="60" />
+                </div>
+                <div>
+                  <label class="field-label">Zoom</label>
+                  <input name="zoom" type="number" step="0.01" class="field-input" value="0.18" min="0" max="0.8" />
+                </div>
+                <div>
+                  <label class="field-label">Pan</label>
+                  <select name="pan" class="field-input">
+                    <option value="right">Left → Right</option>
+                    <option value="left">Right → Left</option>
+                    <option value="up">Down → Up</option>
+                    <option value="down">Up → Down</option>
+                    <option value="center">Center Hold</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="studio-button studio-button-dark w-full" type="submit">Create motion clip</button>
+            </form>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="xl:col-span-7 space-y-6">
+      <div class="glass-card rounded-[2rem] p-6 shadow-soft border border-black/5 min-h-[26rem]">
+        <div class="flex items-start justify-between gap-4 mb-6">
+          <div>
+            <p class="text-[11px] uppercase tracking-[0.3em] text-black/45 mb-2">Outputs</p>
+            <h2 class="font-serif text-2xl">Preview deck</h2>
+          </div>
+          <div id="busy-indicator" class="hidden items-center gap-2 rounded-full bg-accent-gold/10 text-accent-gold px-4 py-2 text-sm font-medium">
+            <span class="w-2 h-2 rounded-full bg-accent-gold animate-pulse"></span>
+            Working…
+          </div>
+        </div>
+
+        <div id="preview-stage" class="relative rounded-[1.5rem] bg-studio-dark text-white overflow-hidden min-h-[26rem] flex items-center justify-center border border-white/10">
+          <div class="absolute inset-0 preview-grid opacity-20"></div>
+          <div id="preview-placeholder" class="text-center px-8 relative z-10">
+            <div class="text-5xl mb-4">✦</div>
+            <p class="font-serif text-3xl mb-3">Nothing rendered yet</p>
+            <p class="text-white/70 max-w-lg mx-auto leading-7">Generate an image, run a quick remix, or animate a still into a downloadable WebM clip.</p>
+          </div>
+          <div id="preview-media" class="hidden relative z-10 w-full h-full"></div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-[2rem] p-6 shadow-soft border border-black/5">
+        <div class="flex items-center justify-between gap-4 mb-5">
+          <div>
+            <p class="text-[11px] uppercase tracking-[0.3em] text-black/45 mb-2">Session log</p>
+            <h2 class="font-serif text-2xl">Activity</h2>
+          </div>
+          <button id="clear-log" class="studio-button studio-button-light">Clear log</button>
+        </div>
+        <div id="log" class="rounded-[1.5rem] bg-white border border-black/5 p-4 space-y-3 max-h-[22rem] overflow-auto text-sm"></div>
+      </div>
+
+      <div class="glass-card rounded-[2rem] p-6 shadow-soft border border-black/5">
+        <div class="flex items-center justify-between gap-4 mb-5">
+          <div>
+            <p class="text-[11px] uppercase tracking-[0.3em] text-black/45 mb-2">Gallery</p>
+            <h2 class="font-serif text-2xl">Recent files</h2>
+          </div>
+          <span class="text-sm text-black/45">Newest first</span>
+        </div>
+        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+      </div>
+    </section>
+  </main>
+
+  <template id="log-item-template">
+    <div class="rounded-2xl border border-black/5 bg-studio-card p-4">
+      <div class="flex items-center justify-between gap-3 mb-2">
+        <strong class="log-title"></strong>
+        <span class="log-time text-xs text-black/45"></span>
+      </div>
+      <p class="log-copy text-black/65 leading-6"></p>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
